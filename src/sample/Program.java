@@ -18,7 +18,7 @@ public class Program {
     private static int[] patternWeight = new int[7];                     // массив весов шаблонов
     private static int fieldSizeX; // размерность игрового поля - количество строк
     private static int fieldSizeY; // размерность игрового поля - количество столбцов
-    private static int stepCounter = 0;
+    private static int stepCounter;// = 0;
     private static int maxStep;
     private static final Scanner SCANNER = new Scanner(System.in);
     private static final Random random = new Random();
@@ -71,21 +71,21 @@ public class Program {
         pat = Pattern.compile("\\*000\\*");
         patternO.add(pat);
         patternWeight[0] = 10000;
-        pat = Pattern.compile("XXX\\*");       //полуоткрытая тройка - срочно закрывать, вес 500
+        pat = Pattern.compile("XXX\\*");       //полуоткрытая тройка - срочно закрывать, вес 1000
         patternX.add(pat);
         pat = Pattern.compile("000\\*");
         patternO.add(pat);
-        patternWeight[1] = 500;
-        pat = Pattern.compile("X\\*XX");      //тройка с брешью посередине - срочно закрывать, вес 500
+        patternWeight[1] = 1000;//500;
+        pat = Pattern.compile("X\\*XX");      //тройка с брешью посередине - срочно закрывать, вес 1000
         patternX.add(pat);
         pat = Pattern.compile("0\\*00");
         patternO.add(pat);
-        patternWeight[2] = 500;
-        pat = Pattern.compile("\\*X\\*X");     // двойка *X*X - вес 100 для точки посередине, 50 для крайней
+        patternWeight[2] = 1000;//500;
+        pat = Pattern.compile("\\*X\\*X");     // двойка *X*X - вес 200 для точки посередине, 100 для крайней
         patternX.add(pat);
         pat = Pattern.compile("\\*0\\*0");
         patternO.add(pat);
-        patternWeight[3] = 100;
+        patternWeight[3] = 100;//100;
         pat = Pattern.compile("\\*XX\\*");      // открытая двойка *ХХ* - вес 80
         patternX.add(pat);
         pat = Pattern.compile("\\*00\\*");
@@ -96,9 +96,9 @@ public class Program {
         pat = Pattern.compile("0\\*\\*0");
         patternO.add(pat);
         patternWeight[5] = 80;
-        pat = Pattern.compile("0*XX\\*");      // полуткрытая двойка *ХХ* - вес 50
+        pat = Pattern.compile("\\*\\*XX");      // полуткрытая двойка **ХХ - вес 50
         patternX.add(pat);
-        pat = Pattern.compile("X*00\\*");
+        pat = Pattern.compile("\\*\\*00");
         patternO.add(pat);
         patternWeight[6] = 50;
 
@@ -171,13 +171,15 @@ public class Program {
      */
     private static void addCoordinatesToPossibleMoves(int x, int y, int weight) {
 
-        for (int[] move : possibleMoves) {
-            if (x == move[0] && y == move[1]) {
-                move[2] = move[2] + weight;
-                return;
+        if (field[x][y] == '*') {
+            for (int[] move : possibleMoves) {
+                if (x == move[0] && y == move[1]) {
+                    move[2] = move[2] + weight;
+                    return;
+                }
             }
+            possibleMoves.add(new int[]{x, y, weight});
         }
-        possibleMoves.add(new int[]{x, y, weight});
     }
 
     /**
@@ -318,7 +320,6 @@ public class Program {
     static void checkAndAddPossibleMoves(char dot, ArrayList<int[]> line) {
 
         ArrayList<Pattern> patternArray;
-        int[] startPatternCoordinates = new int[2];
         StringBuilder charLine = new StringBuilder();
         for (int[] cell : line) {
             charLine.append(field[cell[0]][cell[1]]);
@@ -361,10 +362,10 @@ public class Program {
                             case 3:
                                 if (count == 1) {
                                     addCoordinatesToPossibleMoves(line.get(index)[0], line.get(index)[1], patternWeight[i]);
-                                    addCoordinatesToPossibleMoves(line.get(index + 2)[0], line.get(index + 2)[1], patternWeight[i] / 2);
+                                    addCoordinatesToPossibleMoves(line.get(index + 2)[0], line.get(index + 2)[1], patternWeight[i]*2);
                                 } else {
-                                    addCoordinatesToPossibleMoves(line.get(index + 1)[0], line.get(index + 1)[1], patternWeight[i]);
-                                    addCoordinatesToPossibleMoves(line.get(index + 3)[0], line.get(index + 3)[1], patternWeight[i] / 2);
+                                    addCoordinatesToPossibleMoves(line.get(index + 1)[0], line.get(index + 1)[1], patternWeight[i]*2);
+                                    addCoordinatesToPossibleMoves(line.get(index + 3)[0], line.get(index + 3)[1], patternWeight[i]);
                                 }
                                 break;
 
@@ -378,9 +379,9 @@ public class Program {
                                 break;
                             case 6:
                                 if (count == 1) {
-                                    addCoordinatesToPossibleMoves(line.get(index + 3)[0], line.get(index + 3)[1], patternWeight[i]);
+                                    addCoordinatesToPossibleMoves(line.get(index + 1)[0], line.get(index + 1)[1], patternWeight[i]);
                                 } else {
-                                    addCoordinatesToPossibleMoves(line.get(index)[0], line.get(index)[1], patternWeight[i]);
+                                    addCoordinatesToPossibleMoves(line.get(index + 2)[0], line.get(index + 2)[1], patternWeight[i]);
                                 }
                                 break;
                             default:
@@ -450,6 +451,7 @@ public class Program {
 
             dot_Human = SCANNER.next().charAt(0);
             possibleMoves = new ArrayList<>();
+            stepCounter = 0;
             if (dot_Human == 'X') {
                 humanFirst = true;
                 dot_AI = '0';
@@ -477,6 +479,10 @@ public class Program {
             System.out.println("Желаете сыграть еще раз? (Y - да)");
             if (!SCANNER.next().equalsIgnoreCase("Y"))
                 break;
+            else {
+                patternX.clear();
+                patternO.clear();
+            }
         } while (true);
     }
 }
