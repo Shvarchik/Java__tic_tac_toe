@@ -12,10 +12,10 @@ public class Program {
     private static char dot_Human;
     private static char dot_AI;
     private static char[][] field;
-    private static List<int[]> possibleMoves;   //список возможных ходов, каждый массив - вес точки и ее координаты
-    private static ArrayList<Pattern> patternX = new ArrayList<>();       // список шаблонов для комбинаций 0
-    private static ArrayList<Pattern> patternO = new ArrayList<>();       // список шаблонов для комбинаций Х
-    private static int[] patternWeight = new int[7];                     // массив весов шаблонов
+    private static List<int[]> possibleMoves; // список возможных ходов, каждый массив - вес точки и ее координаты
+    private static ArrayList<Pattern> patternX = new ArrayList<>(); // список шаблонов для комбинаций 0
+    private static ArrayList<Pattern> patternO = new ArrayList<>(); // список шаблонов для комбинаций Х
+    private static int[] patternWeight = new int[7]; // массив весов шаблонов
     private static int fieldSizeX; // размерность игрового поля - количество строк
     private static int fieldSizeY; // размерность игрового поля - количество столбцов
     private static int stepCounter;// = 0;
@@ -27,7 +27,6 @@ public class Program {
      * инициализация игрового поля
      */
     private static void initialize_field() {
-
 
         field = new char[fieldSizeX][fieldSizeY];
         for (int i = 0; i < fieldSizeX; i++) {
@@ -66,37 +65,37 @@ public class Program {
      */
     private static void initializePatterns() {
 
-        Pattern pat = Pattern.compile("\\*XXX\\*");  //открытая тройка - 1 ход до однозначной победы,вес 10000
+        Pattern pat = Pattern.compile("\\*XXX\\*"); // открытая тройка - 1 ход до однозначной победы,вес 10000
         patternX.add(pat);
         pat = Pattern.compile("\\*000\\*");
         patternO.add(pat);
         patternWeight[0] = 10000;
-        pat = Pattern.compile("XXX\\*");       //полуоткрытая тройка - срочно закрывать, вес 1000
+        pat = Pattern.compile("XXX\\*"); // полуоткрытая тройка - срочно закрывать, вес 1000
         patternX.add(pat);
         pat = Pattern.compile("000\\*");
         patternO.add(pat);
-        patternWeight[1] = 1000;//500;
-        pat = Pattern.compile("X\\*XX");      //тройка с брешью посередине - срочно закрывать, вес 1000
+        patternWeight[1] = 1000;// 500;
+        pat = Pattern.compile("X\\*XX"); // тройка с брешью посередине - срочно закрывать, вес 1000
         patternX.add(pat);
         pat = Pattern.compile("0\\*00");
         patternO.add(pat);
-        patternWeight[2] = 1000;//500;
-        pat = Pattern.compile("\\*X\\*X");     // двойка *X*X - вес 200 для точки посередине, 100 для крайней
+        patternWeight[2] = 1000;// 500;
+        pat = Pattern.compile("\\*X\\*X"); // двойка *X*X - вес 200 для точки посередине, 100 для крайней
         patternX.add(pat);
         pat = Pattern.compile("\\*0\\*0");
         patternO.add(pat);
-        patternWeight[3] = 100;//100;
-        pat = Pattern.compile("\\*XX\\*");      // открытая двойка *ХХ* - вес 80
+        patternWeight[3] = 100;// 100;
+        pat = Pattern.compile("\\*XX\\*"); // открытая двойка *ХХ* - вес 80
         patternX.add(pat);
         pat = Pattern.compile("\\*00\\*");
         patternO.add(pat);
         patternWeight[4] = 100;
-        pat = Pattern.compile("X\\*\\*X");      // двойка Х**Х - вес 80
+        pat = Pattern.compile("X\\*\\*X"); // двойка Х**Х - вес 80
         patternX.add(pat);
         pat = Pattern.compile("0\\*\\*0");
         patternO.add(pat);
         patternWeight[5] = 80;
-        pat = Pattern.compile("\\*\\*XX");      // полуткрытая двойка **ХХ - вес 50
+        pat = Pattern.compile("\\*\\*XX"); // полуткрытая двойка **ХХ - вес 50
         patternX.add(pat);
         pat = Pattern.compile("\\*\\*00");
         patternO.add(pat);
@@ -141,7 +140,7 @@ public class Program {
         field[x][y] = dot_Human;
         stepCounter++;
         removeCoordinatesFromPossibleMoves(x, y);
-        return new int[]{x, y};
+        return new int[] { x, y };
     }
 
     /**
@@ -171,14 +170,14 @@ public class Program {
      */
     private static void addCoordinatesToPossibleMoves(int x, int y, int weight) {
 
-        if (field[x][y] == '*') {
+        if (field[x][y] == DOT_EMPTY) {
             for (int[] move : possibleMoves) {
                 if (x == move[0] && y == move[1]) {
                     move[2] = move[2] + weight;
                     return;
                 }
             }
-            possibleMoves.add(new int[]{x, y, weight});
+            possibleMoves.add(new int[] { x, y, weight });
         }
     }
 
@@ -199,7 +198,7 @@ public class Program {
             } else {
                 x = random.nextInt(fieldSizeX);
                 y = random.nextInt(fieldSizeY);
-                move = new int[]{x, y};
+                move = new int[] { x, y };
             }
 
         } while (isCellNotEmpty(x, y));
@@ -207,10 +206,11 @@ public class Program {
         stepCounter++;
         int dist = WIN_COUNT - 2;
 
-        //удаление точки, в которую сделан ход из массива возожных ходов AI
+        // удаление точки, в которую сделан ход из массива возожных ходов AI
         removeCoordinatesFromPossibleMoves(x, y);
 
-        // все точки, отстоящие от точки хода на 1 или 2 клетки помещаются в массив возможных ходов с весом 10
+        // все точки, отстоящие от точки хода на 1 или 2 клетки помещаются в массив
+        // возможных ходов с весом 10
         for (int direction = 1; direction <= 4; direction++) {
             ArrayList<int[]> line = assemblyLine(x, y, dist, direction);
             for (int[] coordinates : line) {
@@ -236,7 +236,7 @@ public class Program {
                 maxIndex = i;
             }
         }
-        return new int[]{possibleMoves.get(maxIndex)[0], possibleMoves.get(maxIndex)[1]};
+        return new int[] { possibleMoves.get(maxIndex)[0], possibleMoves.get(maxIndex)[1] };
     }
 
     /**
@@ -247,7 +247,7 @@ public class Program {
     private static boolean gameCheck(int[] cell) {
         int cellX = cell[0];
         int cellY = cell[1];
-        char checkDot = field[cellX][cellY];              // символ игрока, сделавшего последний ход
+        char checkDot = field[cellX][cellY]; // символ игрока, сделавшего последний ход
         String str;
         if (checkWinLine(cellX, cellY, 1) || checkWinLine(cellX, cellY, 2) ||
                 checkWinLine(cellX, cellY, 3) || checkWinLine(cellX, cellY, 4)) {
@@ -256,7 +256,7 @@ public class Program {
             else
                 str = "Победил компьютер((";
             System.out.println(str);
-            return true;                                  // победа игрока, сделавшего последний ход
+            return true; // победа игрока, сделавшего последний ход
         }
         if (stepCounter == maxStep) {
             System.out.println("Ничья");
@@ -288,7 +288,7 @@ public class Program {
                 winLine.add(cell);
                 counter++;
                 if (counter == WIN_COUNT) {
-                    for (int[] coordinates : winLine) {        // заменяем символы победной комбинации для красоты
+                    for (int[] coordinates : winLine) { // заменяем символы победной комбинации для красоты
                         if (c == 'X')
                             field[coordinates[0]][coordinates[1]] = WIN_X;
                         else
@@ -301,17 +301,22 @@ public class Program {
                 winLine.clear();
             }
         }
-        /* если с - символ человека, то вызов метода, добавляющие точки, необходимые для защиты,
-        в список возможных ходов */
-        if (c == dot_Human) {
-            checkAndAddPossibleMoves(c, line);
-        }
+        /*
+         * если с - символ человека, то вызов метода, добавляющие точки, необходимые для
+         * защиты,
+         * в список возможных ходов
+         */
+        // if (c == dot_Human) {
+        checkAndAddPossibleMoves(c, line);
+        // }
         return false;
     }
 
     /**
-     * Метод получает список координат линии, проверяет совпадение последовательности символов
-     * линии с шаблоном и добавляет необходимые точки в список возможных ходов с соответствующим
+     * Метод получает список координат линии, проверяет совпадение
+     * последовательности символов
+     * линии с шаблоном и добавляет необходимые точки в список возможных ходов с
+     * соответствующим
      * шаблону весом (или повышает вес, если точка уже есть в списке)
      *
      * @param dot  ключевой символ шаблона
@@ -324,7 +329,7 @@ public class Program {
         for (int[] cell : line) {
             charLine.append(field[cell[0]][cell[1]]);
         }
-        //StringBuilder reverseLine = charLine.reverse();
+        // StringBuilder reverseLine = charLine.reverse();
         if (dot == 'X') {
             patternArray = new ArrayList<>(patternX);
         } else {
@@ -334,7 +339,7 @@ public class Program {
 
             for (int i = 0; i < patternArray.size(); i++) {// i - номер шаблона (и его веса)
 
-                if (count == 1 || (i == 1 || i == 2 || i == 3 || i == 6)) {   // реверс строки нужен для шаблонов 1,2,3,6
+                if (count == 1 || (i == 1 || i == 2 || i == 3 || i == 6)) { // реверс строки нужен для шаблонов 1,2,3,6
 
                     Pattern pat = patternArray.get(i);
                     Matcher mat = pat.matcher(charLine);
@@ -343,45 +348,59 @@ public class Program {
                         switch (i) {
                             case 0:
                                 addCoordinatesToPossibleMoves(line.get(index)[0], line.get(index)[1], patternWeight[i]);
-                                addCoordinatesToPossibleMoves(line.get(index + 4)[0], line.get(index + 4)[1], patternWeight[i]);
+                                addCoordinatesToPossibleMoves(line.get(index + 4)[0], line.get(index + 4)[1],
+                                        patternWeight[i]);
                                 break;
                             case 1:
                                 if (count == 1) {
-                                    addCoordinatesToPossibleMoves(line.get(index + 3)[0], line.get(index + 3)[1], patternWeight[i]);
+                                    addCoordinatesToPossibleMoves(line.get(index + 3)[0], line.get(index + 3)[1],
+                                            patternWeight[i]);
                                 } else {
-                                    addCoordinatesToPossibleMoves(line.get(index)[0], line.get(index)[1], patternWeight[i]);
+                                    addCoordinatesToPossibleMoves(line.get(index)[0], line.get(index)[1],
+                                            patternWeight[i]);
                                 }
                                 break;
                             case 2:
                                 if (count == 1) {
-                                    addCoordinatesToPossibleMoves(line.get(index + 1)[0], line.get(index + 1)[1], patternWeight[i]);
+                                    addCoordinatesToPossibleMoves(line.get(index + 1)[0], line.get(index + 1)[1],
+                                            patternWeight[i]);
                                 } else {
-                                    addCoordinatesToPossibleMoves(line.get(index + 2)[0], line.get(index + 2)[1], patternWeight[i]);
+                                    addCoordinatesToPossibleMoves(line.get(index + 2)[0], line.get(index + 2)[1],
+                                            patternWeight[i]);
                                 }
                                 break;
                             case 3:
                                 if (count == 1) {
-                                    addCoordinatesToPossibleMoves(line.get(index)[0], line.get(index)[1], patternWeight[i]);
-                                    addCoordinatesToPossibleMoves(line.get(index + 2)[0], line.get(index + 2)[1], patternWeight[i]*2);
+                                    addCoordinatesToPossibleMoves(line.get(index)[0], line.get(index)[1],
+                                            patternWeight[i]);
+                                    addCoordinatesToPossibleMoves(line.get(index + 2)[0], line.get(index + 2)[1],
+                                            patternWeight[i] * 2);
                                 } else {
-                                    addCoordinatesToPossibleMoves(line.get(index + 1)[0], line.get(index + 1)[1], patternWeight[i]*2);
-                                    addCoordinatesToPossibleMoves(line.get(index + 3)[0], line.get(index + 3)[1], patternWeight[i]);
+                                    addCoordinatesToPossibleMoves(line.get(index + 1)[0], line.get(index + 1)[1],
+                                            patternWeight[i] * 2);
+                                    addCoordinatesToPossibleMoves(line.get(index + 3)[0], line.get(index + 3)[1],
+                                            patternWeight[i]);
                                 }
                                 break;
 
                             case 4:
                                 addCoordinatesToPossibleMoves(line.get(index)[0], line.get(index)[1], patternWeight[i]);
-                                addCoordinatesToPossibleMoves(line.get(index + 3)[0], line.get(index + 3)[1], patternWeight[i]);
+                                addCoordinatesToPossibleMoves(line.get(index + 3)[0], line.get(index + 3)[1],
+                                        patternWeight[i]);
                                 break;
                             case 5:
-                                addCoordinatesToPossibleMoves(line.get(index + 1)[0], line.get(index + 1)[1], patternWeight[i]);
-                                addCoordinatesToPossibleMoves(line.get(index + 2)[0], line.get(index + 2)[1], patternWeight[i]);
+                                addCoordinatesToPossibleMoves(line.get(index + 1)[0], line.get(index + 1)[1],
+                                        patternWeight[i]);
+                                addCoordinatesToPossibleMoves(line.get(index + 2)[0], line.get(index + 2)[1],
+                                        patternWeight[i]);
                                 break;
                             case 6:
                                 if (count == 1) {
-                                    addCoordinatesToPossibleMoves(line.get(index + 1)[0], line.get(index + 1)[1], patternWeight[i]);
+                                    addCoordinatesToPossibleMoves(line.get(index + 1)[0], line.get(index + 1)[1],
+                                            patternWeight[i]);
                                 } else {
-                                    addCoordinatesToPossibleMoves(line.get(index + 2)[0], line.get(index + 2)[1], patternWeight[i]);
+                                    addCoordinatesToPossibleMoves(line.get(index + 2)[0], line.get(index + 2)[1],
+                                            patternWeight[i]);
                                 }
                                 break;
                             default:
@@ -398,7 +417,8 @@ public class Program {
      *
      * @param cellX     координата Х (номер строки)
      * @param cellY     координата Y (номер столбца)
-     * @param dist      максимальная дистанция от точки (при дистанции 3 собирается линия из максимум 7 точек)
+     * @param dist      максимальная дистанция от точки (при дистанции 3 собирается
+     *                  линия из максимум 7 точек)
      * @param direction направление
      *                  1 - горизонталь
      *                  2 - вертикаль
@@ -431,7 +451,7 @@ public class Program {
                     break;
             }
             if (isCellValid(x, y)) {
-                line.add(new int[]{x, y});
+                line.add(new int[] { x, y });
             }
         }
         return line;
@@ -439,7 +459,7 @@ public class Program {
 
     public static void main(String[] args) {
 
-        boolean humanFirst = false;
+        boolean humanFirst;
         int[] step;
         System.out.println("Введите количество строк поля:");
         fieldSizeX = SCANNER.nextInt();
@@ -457,7 +477,8 @@ public class Program {
                 dot_AI = '0';
             } else {
                 dot_AI = 'X';
-                possibleMoves.add(new int[]{fieldSizeX / 2, fieldSizeY / 2, 1});
+                humanFirst = false;
+                possibleMoves.add(new int[] { fieldSizeX / 2, fieldSizeY / 2, 1 });
             }
             initialize_field();
             initializePatterns();
