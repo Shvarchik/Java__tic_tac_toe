@@ -12,13 +12,13 @@ public class Program {
     private static char dot_Human;
     private static char dot_AI;
     private static char[][] field;
-    private static List<int[]> possibleMoves; // список возможных ходов, каждый массив - вес точки и ее координаты
+    private static List<int[]> possibleMoves; // список возможных ходов, каждый массив - координаты точки и ее вес
     private static ArrayList<Pattern> patternX = new ArrayList<>(); // список шаблонов для комбинаций 0
     private static ArrayList<Pattern> patternO = new ArrayList<>(); // список шаблонов для комбинаций Х
     private static int[] patternWeight = new int[7]; // массив весов шаблонов
     private static int fieldSizeX; // размерность игрового поля - количество строк
     private static int fieldSizeY; // размерность игрового поля - количество столбцов
-    private static int stepCounter;// = 0;
+    private static int stepCounter;
     private static int maxStep;
     private static final Scanner SCANNER = new Scanner(System.in);
     private static final Random random = new Random();
@@ -74,18 +74,18 @@ public class Program {
         patternX.add(pat);
         pat = Pattern.compile("000\\*");
         patternO.add(pat);
-        patternWeight[1] = 1000;// 500;
+        patternWeight[1] = 1000; // 500;
         pat = Pattern.compile("X\\*XX"); // тройка с брешью посередине - срочно закрывать, вес 1000
         patternX.add(pat);
         pat = Pattern.compile("0\\*00");
         patternO.add(pat);
-        patternWeight[2] = 1000;// 500;
+        patternWeight[2] = 1000; // 500;
         pat = Pattern.compile("\\*X\\*X"); // двойка *X*X - вес 200 для точки посередине, 100 для крайней
         patternX.add(pat);
         pat = Pattern.compile("\\*0\\*0");
         patternO.add(pat);
-        patternWeight[3] = 100;// 100;
-        pat = Pattern.compile("\\*XX\\*"); // открытая двойка *ХХ* - вес 80
+        patternWeight[3] = 100;
+        pat = Pattern.compile("\\*XX\\*"); // открытая двойка *ХХ* - вес 100 для обеих точек
         patternX.add(pat);
         pat = Pattern.compile("\\*00\\*");
         patternO.add(pat);
@@ -116,7 +116,8 @@ public class Program {
 
     /**
      * проверка свободы ячейки
-     *
+     * возвращает true если ячейка занята
+     * 
      * @param x номер строки
      * @param y номер столбца
      */
@@ -207,10 +208,12 @@ public class Program {
         int dist = WIN_COUNT - 2;
 
         // удаление точки, в которую сделан ход из массива возожных ходов AI
+
         removeCoordinatesFromPossibleMoves(x, y);
 
         // все точки, отстоящие от точки хода на 1 или 2 клетки помещаются в массив
-        // возможных ходов с весом 10
+        // возможных ходов с начальным весом 10 (или их вес увеличивается на 10)
+
         for (int direction = 1; direction <= 4; direction++) {
             ArrayList<int[]> line = assemblyLine(x, y, dist, direction);
             for (int[] coordinates : line) {
@@ -266,8 +269,7 @@ public class Program {
     }
 
     /**
-     * построение ряда точек по одному направлению
-     * и проверка выигрышной комбинации на этом направлении
+     * проверка выигрышной комбинации на одном направлении
      *
      * @param cellX     строка исходной точки (последнего сделанного хода)
      * @param cellY     столбец исходной точки
@@ -302,9 +304,9 @@ public class Program {
             }
         }
         /*
-         * если с - символ человека, то вызов метода, добавляющие точки, необходимые для
-         * защиты,
-         * в список возможных ходов
+         * вызов метода, добавляющего нужные точки
+         * собранной линии в массив возможных
+         * ходов AI
          */
         // if (c == dot_Human) {
         checkAndAddPossibleMoves(c, line);
@@ -314,11 +316,13 @@ public class Program {
 
     /**
      * Метод получает список координат линии, проверяет совпадение
-     * последовательности символов
-     * линии с шаблоном и добавляет необходимые точки в список возможных ходов с
-     * соответствующим
+     * последовательности символов линии с шаблоном и добавляет
+     * необходимые точки в список возможных ходов с соответствующим
      * шаблону весом (или повышает вес, если точка уже есть в списке)
-     *
+     * 
+     * TODO попробовать увеличить все значения весов на 10% для атаки (если dot ==
+     * dot_AI)
+     * 
      * @param dot  ключевой символ шаблона
      * @param line список координат линии
      */
@@ -424,7 +428,7 @@ public class Program {
      *                  2 - вертикаль
      *                  3 - диагональ Л верх - П низ
      *                  4 - диагонал Л низ - П верх
-     * @return список массивов координат точек собранной строки
+     * @return список массивов координат точек собранной линии
      */
 
     private static ArrayList<int[]> assemblyLine(int cellX, int cellY, int dist, int direction) {
