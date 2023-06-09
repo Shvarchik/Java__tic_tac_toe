@@ -13,9 +13,9 @@ public class Program {
     private static char dot_AI;
     private static char[][] field;
     private static List<int[]> possibleMoves; // список возможных ходов, каждый массив - координаты точки и ее вес
-    private static ArrayList<Pattern> patternX = new ArrayList<>(); // список шаблонов для комбинаций 0
-    private static ArrayList<Pattern> patternO = new ArrayList<>(); // список шаблонов для комбинаций Х
-    private static int[] patternWeight = new int[7]; // массив весов шаблонов
+    private static final ArrayList<Pattern> patternX = new ArrayList<>(); // список шаблонов для комбинаций 0
+    private static final ArrayList<Pattern> patternO = new ArrayList<>(); // список шаблонов для комбинаций Х
+    private static final int[] patternWeight = new int[7]; // массив весов шаблонов
     private static int fieldSizeX; // размерность игрового поля - количество строк
     private static int fieldSizeY; // размерность игрового поля - количество столбцов
     private static int stepCounter;
@@ -319,7 +319,6 @@ public class Program {
      * последовательности символов линии с шаблоном и добавляет
      * необходимые точки в список возможных ходов с соответствующим
      * шаблону весом (или повышает вес, если точка уже есть в списке)
-     * 
      * TODO попробовать увеличить все значения весов на 10% для атаки (если dot ==
      * dot_AI)
      * 
@@ -339,7 +338,7 @@ public class Program {
         } else {
             patternArray = new ArrayList<>(patternO);
         }
-        for (int count = 1; count <= 2; charLine = charLine.reverse(), count++) {
+        for (int count = 1; count <= 2; charLine.reverse(), count++) {
 
             for (int i = 0; i < patternArray.size(); i++) {// i - номер шаблона (и его веса)
 
